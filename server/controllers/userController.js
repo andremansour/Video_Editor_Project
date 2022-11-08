@@ -1,62 +1,241 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
-
-
+const bcrypt = require("bcryptjs");
 
 const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {expiresIn: "1d"});
-}
+	return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+};
 
+/*
+    @desc    Register a new user
+    @route   POST /api/users/register
+    @access  Public
+*/
 const registerUser = asyncHandler(async (req, res) => {
+	const { name, email, password } = req.body;
 
-    const { name, email, password } = req.body;
+	// Validation
+	if (!name || !email || !password) {
+		res.status(400);
+		throw new Error("Please fill in all required fields");
+	}
 
-    // Validation 
-    if ( !name || !email || !password) {
-        res.status(400);
-        throw new Error("Please fill in all required fields");
-    }
-    
-    // Check Password Length
-    if (password.length < 6) {
-        res.status(400);
-        throw new Error("Password must be up to 6 characters");
-    }
+	// Check Password Length
+	if (password.length < 6) {
+		res.status(400);
+		throw new Error("Password must be up to 6 characters");
+	}
 
-    // Check if user already exists
-    const userExists = await User.findOne({email}); 
+	// Check if user already exists
+	const userExists = await User.findOne({ email });
 
-    if(userExists) {
-        res.status(400);
-        throw new Error("User already exists");
-    }
+	if (userExists) {
+		res.status(400);
+		throw new Error("User already exists");
+	}
 
-    // Create new user
-    const user = await User.create({
-        name,
-        email,
-        password,
-    });
+	// Create new user
+	const user = await User.create({
+		name,
+		email,
+		password,
+	});
+
+	// Generate Token
+	const token = generateToken(user._id);
+
+	// send token to frontend
+	res.cookie("token", token, {
+		path: "/",
+		httpOnly: true,
+		expires: new Date(Date.now() + 86400000), // expires in 1 day
+		sameSite: "none",
+		secure: true,
+	});
+
+	if (user) {
+		const { _id, name, email } = user;
+		res.status(201).json({
+			_id,
+			name,
+			email,
+            token
+		});
+	} else {
+		res.status(400);
+		throw new Error("Invalid user data");
+	}
+});
+
+/*
+    @desc    Login user
+    @route   POST /api/users/login
+    @access  Public
+*/
+const loginUser = asyncHandler(async (req, res) => {
+	const { email, password } = req.body;
+
+	// Validation
+	if (!email || !password) {
+		res.status(400);
+		throw new Error("Please fill in all required fields");
+	}
+
+	// Check if user exists
+	const user = await User.findOne({ email });
+
+	if (!user) {
+		res.status(400);
+		throw new Error("User not found, Please register");
+	}
+
+	// Check if password matches
+	const isMatch = await bcrypt.compare(password, user.password);
+
+	if (!isMatch) {
+		res.status(400);
+		throw new Error("Invalid credentials, Password is incorrect");
+	}
 
     // Generate Token
-    const token = generateToken(user._id);
-    
-    if(user) {
-        const { _id, name, email } = user;
-        res.status(201).json({
-            _id,
-            name,
-            email,
-            token 
-        })
-    } else {
-        res.status(400);
-        throw new Error("Invalid user data");
-    }
+	const token = generateToken(user._id);
+
+	// send token to frontend
+	res.cookie("token", token, {
+		path: "/",
+		httpOnly: true,
+		expires: new Date(Date.now() + 86400000), // expires in 1 day
+		sameSite: "none",
+		secure: true,
+	});
+
+	if (user && isMatch) {
+		const { _id, name, email } = user;
+		res.status(200).json({
+			_id,
+			name,
+			email,
+            token,
+		});
+	} else {
+		res.status(400);
+		throw new Error("Invalid email or password");
+	}
 });
 
 
+/*
+    @desc    Logout user
+    @route   GET /api/users/logout  
+    @access  Private
+*/
+const logout = asyncHandler(async (req, res) => {
+
+    // Clear cookie
+    res.cookie("token", "", {
+        path: "/",
+        httpOnly: true,
+        expires: new Date(0),
+        sameSite: "none",
+        secure: true,
+    });
+    return  res.status(200).json({
+        message: "Logged out",
+    });
+});
+
+/*
+    @desc    Get user profile
+    @route   GET /api/users/getuser
+    @access  Private
+*/
+const getUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+
+    if(user) {
+        const { _id, name, email } = user;
+        res.status(200).json({
+            _id,
+            name,
+            email,
+        });
+        } else {
+            res.status(400);
+            throw new Error("User not found");
+        }
+});
+
+/*
+    @desc    Check if user is logged in
+    @route   GET /api/users/loggedin
+    @access  Private
+*/
+const loginStatus = asyncHandler(async (req, res) => {
+    
+    // const user = await User.findById(req.user._id);
+    const token = req.cookies.token;
+
+    if(!token) {
+        return res.json(false);
+    }
+
+    // Verify token
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+
+    if(verified) {
+        return res.json(true);
+    }
+
+    return res.json(false);
+
+    // if(user) {
+    //     const { _id, name, email } = user;
+    //     res.status(200).json({
+    //         _id,
+    //         name,
+    //         email,
+    //     });
+    //     } else {
+    //         res.status(400);
+    //         throw new Error("User not found");
+    //     }
+});
+
+/*
+    @desc    Update user profile
+    @route   PUT /api/users/updateuser
+    @access  Private
+*/
+const updateUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+
+    if(user) {
+        const {name, email} = user;
+        user.name = req.body.name || name;
+        user.email = email;
+
+        // save uodated user data
+        const updatedUser = await user.save();
+
+        res.status(200).json({
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+        });
+    } else {
+        res.status(404);
+        throw new Error("User not found");
+    } 
+});
+
+
+
 module.exports = {
-    registerUser,
-}
+	registerUser,
+	loginUser,
+    logout,
+    getUser,
+    loginStatus,
+    updateUser
+};

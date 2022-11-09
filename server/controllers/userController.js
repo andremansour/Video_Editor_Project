@@ -2,6 +2,9 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const Token = require("../models/tokenModel");
+const crypto = require("crypto");
+const sendEmail = require("../utils/sendEmail");
 
 const generateToken = (id) => {
 	return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -229,6 +232,137 @@ const updateUser = asyncHandler(async (req, res) => {
     } 
 });
 
+/*
+    @desc    Update user password
+    @route   PUT /api/users/updatepassword
+    @access  Private
+*/
+
+const updatePassword = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+
+    const {oldPassword, password} = req.body;
+    
+    if(!user){
+        res.status(400);
+        throw new Error("User not found");
+    }
+
+    if(!oldPassword || !password) {
+        res.status(400);
+        throw new Error("Please fill in all required fields");
+    }
+
+    // Check if password matches
+    const passwordCorrect = await bcrypt.compare(oldPassword, user.password);
+
+    // save password
+    if(user && passwordCorrect) {
+        user.password = password;
+        await user.save();
+        res.status(200).send("Password updated");
+    } else {
+        res.status(400);
+        throw new Error("Invalid credentials, Password is incorrect");
+    }
+
+});
+
+/* 
+    @desc    Forgot password
+    @route   POST /api/users/forgotpassword
+    @access  Public
+*/
+const forgotPassword = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+  
+    if(!user) {
+      res.status(404);
+      throw new Error("User does not exist");
+    }
+  
+    // Delete token if it exists in DB
+    let token = await Token.findOne({ userId: user._id });
+    if(token) {
+      await token.deleteOne();
+    }
+  
+    // Generate token
+    let resetToken = crypto.randomBytes(32).toString("hex") + user._id;
+    console.log(resetToken);
+  
+
+    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+  
+    // Save Token to DB
+    await new Token({
+      userId: user._id,
+      token: hashedToken,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 3600000, // expires in 1 hour
+    }).save();
+  
+    // Construct Reset Url
+    const resetUrl = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
+  
+    // Reset Email
+    const message = `
+        <h2>Hello ${user.name}</h2>
+        <p>You are recieving this email because you have requested to reset your password</p>  
+        <p>This reset link is valid for only 1 hour.</p>
+        <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
+        <p>Thank you.</p>
+      `;
+    const subject = "Password Reset Request";
+    const send_to = user.email;
+    const sent_from = process.env.EMAIL_USER;
+  
+    try {
+      await sendEmail(subject, message, send_to, sent_from);
+      res.status(200).json({ success: true, message: "Reset Email Sent" });
+    } catch (error) {
+      res.status(500);
+      throw new Error("Email not sent, please try again");
+    }
+});
+
+
+/*
+    @desc    Reset password
+    @route   POST /api/users/resetpassword
+    @access  Public
+*/
+
+const resetPassword = asyncHandler(async (req, res) => {
+    const { password } = req.body;
+    const { resetToken } = req.params;
+  
+    // Hash token, then compare to Token in DB
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+  
+    // Find token in DB
+    const userToken = await Token.findOne({
+      token: hashedToken,
+      expiresAt: { $gt: Date.now() },
+    });
+  
+    if (!userToken) {
+      res.status(404);
+      throw new Error("Invalid or Expired Token");
+    }
+  
+    // Find user
+    const user = await User.findOne({ _id: userToken.userId });
+    user.password = password;
+    await user.save();
+    res.status(200).json({
+      message: "Password Reset Successful, Please Login",
+    });
+});
 
 
 module.exports = {
@@ -237,5 +371,8 @@ module.exports = {
     logout,
     getUser,
     loginStatus,
-    updateUser
+    updateUser,
+    updatePassword,
+    forgotPassword,
+    resetPassword
 };

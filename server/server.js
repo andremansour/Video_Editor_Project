@@ -6,6 +6,8 @@ const cors = require("cors");
 const userRoute = require("./routes/userRoutes");
 const errorHandler = require("./middleware/errorMiddleware");
 const cookieParser = require("cookie-parser");
+const path = require("path");
+
 
 const app = express(); 
 
@@ -17,7 +19,11 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(express.urlencoded({extended: false}))
 app.use(bodyParser.json())
-app.use(cors())
+app.use(cors({
+    origin: ["http://localhost:5173"],
+    credentials: true
+}))
+app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 
 // middleware routes
 app.use("/api/users", userRoute);

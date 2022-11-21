@@ -3,7 +3,7 @@ import { fetchFile } from "@ffmpeg/ffmpeg";
 import * as helpers from "../../utils/helpers";
 import useRedirectLoggedOutUser from "../../customHook/useRedirectLoggedOutUser";
 import VideoFilePicker from "./VideoFilePicker";
-import OutputVideo from "./OutVideo";
+import OutputVideo from "./OutputVideo";
 import RangeInput from "./RangeInput";
 import { ffmpeg } from "../../App";
 
@@ -184,6 +184,7 @@ function VideoEditorTrim() {
 		<div className="app">
 			<section className="deck">
 				<article className="grid_txt_2">
+				<h2>Trim Your Video</h2>
 					<VideoFilePicker handleChange={handleChange} showVideo={!!inputVideoFile}>
 						<div className="bord_g_2 p_2">
 							<video src={inputVideoFile ? URL : null} autoPlay controls muted onLoadedMetadata={handleLoadedData} width="450"></video>

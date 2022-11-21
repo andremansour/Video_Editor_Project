@@ -6,16 +6,45 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Forgot from "./pages/auth/Forgot";
 import Reset from "./pages/auth/Reset";
-import Sidebar from "./components/Sidebar/Sidebar";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import Layout from "./components/layout/Layout";
+import Sidebar from "./components/Sidebar/Sidebar.jsx";
+import Dashboard from "./pages/Dashboard/Dashboard.jsx";
+import Layout from "./components/layout/Layout.jsx";
+import VideoEditorTrim from "./pages/VideoEditorTrim/VideoEditorTrim.jsx";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useDispatch } from "react-redux";
+import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
+import { useEffect } from "react";
+import { getLoginStatus } from "../src/services/authService";
+import { SET_LOGIN } from "./redux/features/auth/authSlice";
+import HomeReplace from "./pages/Home/HomeReplace";
+import VideoEditorComnbine from "./pages/VideoEditorCombine/VideoEditorCombine";
+import VideoEditorToGif from "./pages/VideoEditorVideoToGif/VideoEditorVideoToGif";
+import VideoMp4ToMp3 from "./pages/VideoMp4ToMp3/VideoMp4ToMp3";
 
 axios.defaults.withCredentials = true;
 
+export const ffmpeg = createFFmpeg({
+	corePath: "./ffmpeg_core_dist/ffmpeg-core.js", // Path to ffmpeg-core.js
+	log: true,
+});
+
+(async function () {
+    await ffmpeg.load();
+})();
+
 function App() {
+	const dispatch = useDispatch();
+	useEffect(() => {
+		async function loginStatus() {
+			const status = await getLoginStatus();
+			dispatch(SET_LOGIN(status));
+		}
+		loginStatus();
+	}, [dispatch]);
+
+
 	return (
 		<BrowserRouter>
 			<ToastContainer />
@@ -36,6 +65,37 @@ function App() {
 						</Sidebar>
 					}
 				/>
+				<Route
+					path="/video-editor-trim"
+					element={
+						<Sidebar>
+							<Layout>
+								<VideoEditorTrim />
+							</Layout>
+						</Sidebar>
+					}
+				/>
+				<Route
+					path="/video-editor-combine"
+					element={
+						<Sidebar>
+							<Layout>
+								<VideoEditorComnbine />
+							</Layout>
+						</Sidebar>
+					}
+				/>
+				<Route
+					path="/video-editor-ToGif"
+					element={
+						<Sidebar>
+							<Layout>
+								<VideoMp4ToMp3 />
+							</Layout>
+						</Sidebar>
+					}
+				/>
+				<Route path="/home-replace" element={<HomeReplace />} />
 			</Routes>
 		</BrowserRouter>
 	);

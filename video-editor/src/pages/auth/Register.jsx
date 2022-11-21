@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { registerUser, validateEmail } from "../../services/authService.jsx";
 import { useDispatch } from "react-redux";
-import { login, SET_NAME } from "../../redux/features/auth/authSlice.js";
+import { SET_LOGIN, SET_NAME } from "../../redux/features/auth/authSlice.js";
 import Loader from "../../components/loader/loader.jsx";
 import "./App.css";
 
@@ -51,7 +51,7 @@ const Register = () => {
 		try {
 			const data = await registerUser(userData);
 			// console.log(data);
-			await dispatch(login(true));
+			await dispatch(SET_LOGIN(true));
 			await dispatch(SET_NAME(data.name));
 			navigate("/dashboard");
 			setIsLoading(false);

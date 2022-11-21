@@ -1,5 +1,5 @@
 import React from "react";
-import LoaderImg from "../../assets/loader.gif";
+import LoaderImg from "../../assets/spinner.gif";
 import ReactDOM from "react-dom";
 import "./loader.scss";
 
@@ -15,11 +15,11 @@ export const Loader = () => {
 };
 
 export const LoaderGif = () => {
-  return(
-    <div className="--center-all">
-      <img src={Loader} alt="Loading..." />
-    </div>
-  )
-}
+	return (
+		<div className="--center-all">
+			<img src={Loader} alt="Loading..." />
+		</div>
+	);
+};
 
 export default Loader;

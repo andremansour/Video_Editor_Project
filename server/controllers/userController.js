@@ -333,7 +333,6 @@ const forgotPassword = asyncHandler(async (req, res) => {
     @route   POST /api/users/resetpassword
     @access  Public
 */
-
 const resetPassword = asyncHandler(async (req, res) => {
     const { password } = req.body;
     const { resetToken } = req.params;

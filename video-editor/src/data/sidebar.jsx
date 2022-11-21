@@ -9,9 +9,19 @@ const menu = [
 		path: "/dashboard",
 	},
 	{
-		title: "Create New Video",
+		title: "Trim Video",
 		icon: <BiImageAdd />,
-		path: "/add-product",
+		path: "/video-editor-trim",
+	},
+	{
+		title: "Combine Content",
+		icon: <BiImageAdd />,
+		path: "/video-editor-combine",
+	},
+	{
+		title: "Video to Gif",
+		icon: <BiImageAdd />,
+		path: "/video-editor-ToGif",
 	},
 	{
 		title: "Account",
@@ -26,12 +36,7 @@ const menu = [
 				path: "/edit-profile",
 			},
 		],
-	},
-	{
-		title: "Report Bug",
-		icon: <FaCommentAlt />,
-		path: "/contact-us",
-	},
+	}
 ];
 
 export default menu;

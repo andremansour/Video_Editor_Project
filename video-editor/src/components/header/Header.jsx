@@ -19,10 +19,14 @@ const Header = () => {
 	return (
 		<div className="--pad header">
 			<div className="--flex-between">
-				<h3>
-					<span className="--fw-thin">Welcome, </span>
-					<span className="--color-dark">{name}</span>
-				</h3>
+				<div class="position-relative position-relative-example">
+					<div class="position-absolute top-0 start-0">
+						<h3 className="float-right-top">
+							<span className="--fw-thin greet">Welcome, </span>
+							<span className="--color-dark">{name}</span>
+						</h3>
+					</div>
+				</div>
 				<NavLink as={Link} to="/login" onClick={logout}>
 					<Button variant="light">Logout</Button>
 				</NavLink>

@@ -128,10 +128,9 @@ function VideoEditorTrim() {
 
 		try {
 			ffmpeg.FS("writeFile", inputVideoFile.name, await fetchFile(inputVideoFile));
-			// await ffmpeg.run('-ss', '00:00:13.000', '-i', inputVideoFile.name, '-t', '00:00:5.000', 'ping.mp4');
-			await ffmpeg.run("-ss", helpers.toTimeString(startTime), "-i", inputVideoFile.name, "-t", helpers.toTimeString(offset), "-c", "copy", "ping.mp4");
+			await ffmpeg.run("-ss", helpers.toTimeString(startTime), "-i", inputVideoFile.name, "-t", helpers.toTimeString(offset), "-c", "copy", "output.mp4");
 
-			const data = ffmpeg.FS("readFile", "ping.mp4");
+			const data = ffmpeg.FS("readFile", "output.mp4");
 			console.log(data);
 			const dataURL = await helpers.readFileAsBase64(new Blob([data.buffer], { type: "video/mp4" }));
 

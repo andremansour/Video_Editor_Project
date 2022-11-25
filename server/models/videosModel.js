@@ -1,26 +1,23 @@
 const mongoose = require('mongoose');
 
 const videoSchema = new mongoose.Schema({
-    token: {
-        type: String,
-        required: true
-    },
-    createdAt: {
-        type: Date,
-        required: true
-    },
-    expiresAt: {
-        type: Date,
-        required: true
-    },
-    userId: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
         required: true
-    }
-    
-});
+    },
+    name:{
+        type: String,
+        required: [true, "Please name your video"],
+        trim:true
+    },
+    video:{
+        type: Object,
+        default: {}
+    },
+}, {timestamps: true});
 
-const Token = mongoose.model('Token', tokenSchema);
 
-module.exports = Token;
+const Video = mongoose.model("Video", videoSchema);
+
+module.exports = Video;

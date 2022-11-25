@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const userRoute = require("./routes/userRoutes");
+const videoRoute = require("./routes/videoRoutes");
 const errorHandler = require("./middleware/errorMiddleware");
 const cookieParser = require("cookie-parser");
 const path = require("path");
@@ -23,10 +24,10 @@ app.use(cors({
     origin: ["http://localhost:5173"],
     credentials: true
 }))
-app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 
 // middleware routes
 app.use("/api/users", userRoute);
+app.use("/api/videos", videoRoute);
 
 // routes 
 app.get("/", (req, res) =>{

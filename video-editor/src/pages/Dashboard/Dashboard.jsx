@@ -6,8 +6,9 @@ import moon from "../../assets/moon-sea.jpg";
 const Dashboard = () => {
 	useRedirectLoggedOutUser("/login");
 
-	let data = [
-		{
+	let datas = [
+		{	
+			id:	1,
 			name: "Trim",
 			img: moon,
 			desc: "",
@@ -43,16 +44,16 @@ const Dashboard = () => {
 		<div>
 			<div className="container">
 				<div className="row">
-					{data.map((data) => (
-						<div className="col-4">
+					{datas.map((data, index) => (
+						<div key={index} className="col-4">
 							<div className="card" style={{ width: "18rem" }}>
-								<img src={data.img} class="card-img-top" />
-								<div class="card-body">
-									<h5 class="card-title">Card title</h5>
-									<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-									<a class="btn btn-primary">
+								<img src={data.img} className="card-img-top" />
+								<div className="card-body">
+									<h5 className="card-title">Card title</h5>
+									<p className="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+									<button className="btn btn-primary">
 										<Link to={data.link}>{data.name}</Link>
-									</a>
+									</button>
 								</div>
 							</div>
 						</div>

@@ -1,8 +1,8 @@
-const OutputVideo = ({ handleDownload, videoSrc }) => {
-    return videoSrc ? (
+const OutputSound = ({ handleDownload, soundSrc }) => {
+    return soundSrc ? (
       <article className="grid_txt_2">
         <div className="bord_g_2 p_2">
-          <video src={videoSrc} autoPlay controls width="400" height="700"></video>
+          <audio src={soundSrc} autoPlay controls></audio>
         </div>
         <button onClick={handleDownload} className="btn btn_g">
           {" "}
@@ -12,4 +12,4 @@ const OutputVideo = ({ handleDownload, videoSrc }) => {
     ) : null;
   };
   
-export default OutputVideo;
+export default OutputSound;

@@ -29,6 +29,16 @@ const menu = [
 		path: "/video-editor-mute-video-audio",
 	},
 	{
+		title: "Convert Mp3 to Mp4",
+		icon: <BiImageAdd />,
+		path: "/video-editor-convert-mp3-to-mp4",
+	},
+	{
+		title: "Crop Your from 16:9 to 9:16",
+		icon: <BiImageAdd />,
+		path: "/video-editor-video-crop",
+	},
+	{
 		title: "Account",
 		icon: <FaRegChartBar />,
 		childrens: [

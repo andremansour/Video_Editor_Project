@@ -20,8 +20,9 @@ import { SET_LOGIN } from "./redux/features/auth/authSlice";
 import HomeReplace from "./pages/Home/HomeReplace";
 import VideoEditorComnbine from "./pages/VideoEditorCombine/VideoEditorCombine";
 import VideoEditorToGif from "./pages/VideoEditorVideoToGif/VideoEditorVideoToGif";
-// import VideoMp4ToMp3 from "./pages/VideoMp4ToMp3/VideoMp4ToMp3";
+import VideoMp4ToMp3 from "./pages/VideoMp4ToMp3/VideoMp4ToMp3";
 import VideoEditorMuteAudio from "./pages/VideoEditorMuteAudio/VideoEditorMuteAudio";
+import VideoEditorCropVideo from "./pages/VideoEditorCropVideo/VideoEditorCropVideo"
 
 axios.defaults.withCredentials = true;
 
@@ -31,9 +32,8 @@ export const ffmpeg = createFFmpeg({
 });
 
 (async function () {
-    await ffmpeg.load();
+	await ffmpeg.load();
 })();
-
 
 function App() {
 	const dispatch = useDispatch();
@@ -44,7 +44,6 @@ function App() {
 		}
 		loginStatus();
 	}, [dispatch]);
-
 
 	return (
 		<BrowserRouter>
@@ -102,6 +101,26 @@ function App() {
 						<Sidebar>
 							<Layout>
 								<VideoEditorMuteAudio />
+							</Layout>
+						</Sidebar>
+					}
+				/>
+				<Route
+					path="/video-editor-convert-mp3-to-mp4"
+					element={
+						<Sidebar>
+							<Layout>
+								<VideoMp4ToMp3 />
+							</Layout>
+						</Sidebar>
+					}
+				/>
+				<Route
+					path="/video-editor-video-crop"
+					element={
+						<Sidebar>
+							<Layout>
+								<VideoEditorCropVideo />
 							</Layout>
 						</Sidebar>
 					}

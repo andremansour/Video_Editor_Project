@@ -223,6 +223,12 @@ p {
   box-shadow: var(--box-shadow);
   overflow: hidden;
 }
+/*Dashbord padding*/
+
+.card{
+  margin: 13px;
+  border-radius: 25px;
+}
 
 /* Margin */
 .--m {
@@ -319,8 +325,8 @@ p {
 }
 
 .--btn-primary {
-  color: #fff;
-  background: #007bff;
+  color: rgb(172, 33, 33);
+  background: #f8c1c1;
 }
 .--btn-secondary {
   color: #fff;

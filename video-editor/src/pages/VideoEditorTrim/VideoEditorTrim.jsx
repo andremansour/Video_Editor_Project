@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
 import { fetchFile } from "@ffmpeg/ffmpeg";
 import * as helpers from "../../utils/helpers";
 import useRedirectLoggedOutUser from "../../customHook/useRedirectLoggedOutUser";
@@ -7,83 +8,37 @@ import OutputVideo from "./OutputVideo";
 import RangeInput from "./RangeInput";
 import { ffmpeg } from "../../App";
 
-// const ffmpeg = createFFmpeg({
-// 	corePath: "./ffmpeg_core_dist/ffmpeg-core.js", // Path to ffmpeg-core.js
-// 	log: true,
-// });
-
-// (async function () {
-// 	await ffmpeg.load();
-// })();
-
 function VideoEditorTrim() {
 	useRedirectLoggedOutUser("/login");
 
-	// const [videoSrc, setVideoSrc] = useState("");
-	// const [videoSrc2, setVideoSrc2] = useState("");
-	// const [gifSrc, setGifSrc] = useState("");
+	const [windowSize, setWindowSize] = useState(getWindowSize());
+	let videoinnerwidth = windowSize.innerWidth;
+	console.log(videoinnerwidth);
 
-	// Uploading Video
-	// const [imageFile, setImageFile] = useState({});
-	// const [soundFile, setSoundFile] = useState({});
-	// const [videoFile, setVideoFile] = useState({});
-	// const [isProcessing, setIsProcessing] = useState(false);
+	if (videoinnerwidth <= 500) {
+		videoinnerwidth = 300;
+	} else {
+		videoinnerwidth = 450;
+	}
 
-	// const handleChangeImage = (e) => {
-	// 	const image = e.target.files[0];
-	// 	console.log(image);
-	// 	setImageFile(image);
-	// };
+	useEffect(() => {
+		function handleWindowResize() {
+			setWindowSize(getWindowSize());
+		}
 
-	// const handleChangeSound = (e) => {
-	// 	const sound = e.target.files[0];
-	// 	console.log(sound);
-	// 	setSoundFile(sound);
-	// };
+		window.addEventListener("resize", handleWindowResize);
 
-	// const handleChangeVideo = (e) => {
-	// 	const video = e.target.files[0];
-	// 	console.log(video);
-	// 	setVideoFile(video);
-	// };
+		return () => {
+			window.removeEventListener("resize", handleWindowResize);
+		};
+	}, []);
 
-	// const createVideo = async () => {
-	// 	await ffmpeg.load();
-	// 	ffmpeg.FS("writeFile", "image.png", await fetchFile(imageFile));
-	// 	ffmpeg.FS("writeFile", "sound.mp3", await fetchFile(soundFile));
+	function getWindowSize() {
+		const { innerWidth, innerHeight } = window;
+		return { innerWidth, innerHeight };
+	}
 
-	// 	await ffmpeg.run("-framerate", "1/10", "-i", "image.png", "-i", "sound.mp3", "-c:v", "libx264", "-t", "1000", "-pix_fmt", "yuv420p", "-vf", "scale=1920:1080", "test.mp4");
-	// 	const data = ffmpeg.FS("readFile", "test.mp4");
-	// 	setVideoSrc(URL.createObjectURL(new Blob([data.buffer], { type: "video/mp4" })));
-	// 	console.log(data);
-	// 	return data;
-	// };
-
-	// function that returns thumbnail from video
-	// const createThumbnail = async () => {
-	//   await ffmpeg.load();
-	//   ffmpeg.FS("writeFile", "video.mp4", await fetchFile(videoFile));
-
-	//   await ffmpeg.run("-i", "video.mp4", "-ss", "00:00:01.000", "-vframes", "1", "thumbnail.png");
-	//   const data = ffmpeg.FS("readFile", "thumbnail.png");
-	//   setVideoSrc(URL.createObjectURL(new Blob([data.buffer], { type: "image/png" })));
-	//   return data;
-	// };
-
-
-
-	// create a function that takes two photos and creates a gif
-
-	// const createGif = async () => {
-	//   await ffmpeg.load();
-	//   ffmpeg.FS("writeFile", "image1.png", await fetchFile(imageFile));
-	//   ffmpeg.FS("writeFile", "image2.png", await fetchFile(imageFile2));
-
-	//   await ffmpeg.run("-i", "image1.png", "-i", "image2.png", "-filter_complex", "hstack", "output.gif");
-	//   const data = ffmpeg.FS("readFile", "output.gif");
-	//   setGifSrc(URL.createObjectURL(new Blob([data.buffer], { type: "image/gif" })));
-	//   return data;
-	// };
+	console.log(windowSize.innerWidth);
 
 	// create a function that trims a video and creates a new video file
 
@@ -123,8 +78,22 @@ function VideoEditorTrim() {
 	const getThumbnails = async ({ duration }) => {
 		if (!ffmpeg.isLoaded()) await ffmpeg.load();
 		setThumbnailIsProcessing(true);
-		let MAX_NUMBER_OF_IMAGES = 15;
-		let NUMBER_OF_IMAGES = duration < MAX_NUMBER_OF_IMAGES ? duration : 15;
+
+		let MAX_NUMBER_OF_IMAGES = null;
+		let NUMBER_OF_IMAGES = null;
+
+		console.log(windowSize.innerWidth);
+		if (windowSize.innerWidth <= 500) {
+			MAX_NUMBER_OF_IMAGES = 3;
+			NUMBER_OF_IMAGES = duration < MAX_NUMBER_OF_IMAGES ? duration : 3;
+		} else {
+			MAX_NUMBER_OF_IMAGES = 15;
+			NUMBER_OF_IMAGES = duration < MAX_NUMBER_OF_IMAGES ? duration : 15;
+		}
+
+		console.log(MAX_NUMBER_OF_IMAGES);
+		console.log(NUMBER_OF_IMAGES);
+
 		let offset = duration === MAX_NUMBER_OF_IMAGES ? 1 : duration / NUMBER_OF_IMAGES;
 
 		const arrayOfImageURIs = [];
@@ -134,7 +103,7 @@ function VideoEditorTrim() {
 			let startTimeInSecs = helpers.toTimeString(Math.round(i * offset));
 
 			try {
-				await ffmpeg.run("-ss", startTimeInSecs, "-i", inputVideoFile.name, "-t", "00:00:1.000", "-vf", `scale=150:-1`, `img${i}.png`);
+				await ffmpeg.run("-ss", startTimeInSecs, "-i", inputVideoFile.name, "-t", "00:00:1.000", "-vf", `scale=300:-1`, `img${i}.png`);
 				const data = ffmpeg.FS("readFile", `img${i}.png`);
 
 				let blob = new Blob([data.buffer], { type: "image/png" });
@@ -182,9 +151,9 @@ function VideoEditorTrim() {
 
 	return (
 		<div className="app">
-			<section className="deck">
+			{/* <section className="deck">
 				<article className="grid_txt_2">
-				<h2>Trim Your Video</h2>
+					<h2>Trim Your Video</h2>
 					<VideoFilePicker handleChange={handleChange} showVideo={!!inputVideoFile}>
 						<div className="bord_g_2 p_2">
 							<video src={inputVideoFile ? URL : null} autoPlay controls muted onLoadedMetadata={handleLoadedData} width="450"></video>
@@ -192,27 +161,48 @@ function VideoEditorTrim() {
 					</VideoFilePicker>
 				</article>
 				<OutputVideo videoSrc={trimmedVideoFile} handleDownload={() => helpers.download(trimmedVideoFile)} />
+			</section> */}
+			<section>
+				<div className="container">
+					<h1>Trim your video</h1>
+					<div className="row">
+						<div className="col-md-12 col-lg-6">
+							<article className="grid_txt_2">
+								<VideoFilePicker handleChange={handleChange} showVideo={!!inputVideoFile}>
+									<video src={inputVideoFile ? URL : null} autoPlay controls muted onLoadedMetadata={handleLoadedData} width={videoinnerwidth}></video>
+								</VideoFilePicker>
+							</article>
+						</div>
+					</div>
+					<div className="row">
+						<div className="col-md-12">
+							{
+								<>
+									<RangeInput
+										rEnd={rEnd}
+										rStart={rStart}
+										handleUpdaterStart={handleUpdateRange(setRstart)}
+										handleUpdaterEnd={handleUpdateRange(setRend)}
+										loading={thumbnailIsProcessing}
+										videoMeta={videoMeta}
+										control={
+											<div className="u-center">
+												<button onClick={handleTrim} className="btn btn_b" disabled={trimIsProcessing}>
+													{trimIsProcessing ? "trimming..." : "trim selected"}
+												</button>
+											</div>
+										}
+										thumbNails={thumbNails}
+									/>
+								</>
+							}
+						</div>
+						<div className="col-md-12">
+							<OutputVideo videoSrc={trimmedVideoFile} handleDownload={() => helpers.download(trimmedVideoFile)} width={videoinnerwidth}></OutputVideo>
+						</div>
+					</div>
+				</div>
 			</section>
-			{
-				<>
-					<RangeInput
-						rEnd={rEnd}
-						rStart={rStart}
-						handleUpdaterStart={handleUpdateRange(setRstart)}
-						handleUpdaterEnd={handleUpdateRange(setRend)}
-						loading={thumbnailIsProcessing}
-						videoMeta={videoMeta}
-						control={
-							<div className="u-center">
-								<button onClick={handleTrim} className="btn btn_b" disabled={trimIsProcessing}>
-									{trimIsProcessing ? "trimming..." : "trim selected"}
-								</button>
-							</div>
-						}
-						thumbNails={thumbNails}
-					/>
-				</>
-			}
 		</div>
 	);
 }

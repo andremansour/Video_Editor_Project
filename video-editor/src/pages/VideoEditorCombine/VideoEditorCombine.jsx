@@ -74,8 +74,6 @@ function VideoEditorCombine() {
 		ffmpeg.FS("writeFile", inputVideoFile.name, await fetchFile(inputVideoFile));
 		ffmpeg.FS("writeFile", inputAudioFile.name, await fetchFile(inputAudioFile));
 
-		// await ffmpeg.run("-i", inputVideoFile.name,"-y", "-stream_loop", "xTime","-c", "copy", "Loop.mp4", "-y", "-i", "Loop.mp4", "-i",inputAudioFile.name, "-c:v", "copy", "-c:a", "aac", "longVideo.mp4", "-y", "-i", "longVideo.mp4", "-ss", "00:00:00","-t", "audioDuration", "-async", "1", "-c", "copy", "output.mp4");
-
 		await ffmpeg.run("-stream_loop", "-1", "-i", inputVideoFile.name, "-i", inputAudioFile.name, "-c:v", "copy", "-c:a", "aac", "-strict", "experimental", "-map", "0:v:0", "-map", "1:a:0", "-shortest", "output.mp4");
 		const data = ffmpeg.FS("readFile", "output.mp4");
 		console.log(data);
@@ -88,13 +86,11 @@ function VideoEditorCombine() {
 		return data;
 	};
 
-	// function that takes video and sound and creates video with sound and loops video if sound is longer than video
-
 	return (
 		<div className="app">
 			<section className="deck">
 				<article className="grid_txt_2">
-				<h2>Combine Video and Audio</h2>
+					<h2>Combine Video and Audio</h2>
 					<VideoFilePicker handleChange={handleVideoChange} showVideo={!!inputVideoFile}>
 						<div className="bord_g_2 p_2">
 							<video src={inputVideoFile ? videoURL : null} autoPlay controls muted onLoadedMetadata={handleVideoLoadedData} width="450"></video>

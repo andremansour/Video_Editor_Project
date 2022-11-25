@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import React from "react";
+import React, { useEffect, useState } from "react";
 // import { useEffect } from "react";
 import Home from "./pages/Home/Home";
 import Login from "./pages/auth/Login";
@@ -15,13 +15,13 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from "react-redux";
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
-import { useEffect } from "react";
 import { getLoginStatus } from "../src/services/authService";
 import { SET_LOGIN } from "./redux/features/auth/authSlice";
 import HomeReplace from "./pages/Home/HomeReplace";
 import VideoEditorComnbine from "./pages/VideoEditorCombine/VideoEditorCombine";
 import VideoEditorToGif from "./pages/VideoEditorVideoToGif/VideoEditorVideoToGif";
-import VideoMp4ToMp3 from "./pages/VideoMp4ToMp3/VideoMp4ToMp3";
+// import VideoMp4ToMp3 from "./pages/VideoMp4ToMp3/VideoMp4ToMp3";
+import VideoEditorMuteAudio from "./pages/VideoEditorMuteAudio/VideoEditorMuteAudio";
 
 axios.defaults.withCredentials = true;
 
@@ -33,6 +33,7 @@ export const ffmpeg = createFFmpeg({
 (async function () {
     await ffmpeg.load();
 })();
+
 
 function App() {
 	const dispatch = useDispatch();
@@ -86,11 +87,21 @@ function App() {
 					}
 				/>
 				<Route
-					path="/video-editor-ToGif"
+					path="/video-editor-to-gif"
 					element={
 						<Sidebar>
 							<Layout>
-								<VideoMp4ToMp3 />
+								<VideoEditorToGif />
+							</Layout>
+						</Sidebar>
+					}
+				/>
+				<Route
+					path="/video-editor-mute-video-audio"
+					element={
+						<Sidebar>
+							<Layout>
+								<VideoEditorMuteAudio />
 							</Layout>
 						</Sidebar>
 					}

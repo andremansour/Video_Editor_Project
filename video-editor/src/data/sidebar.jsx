@@ -21,7 +21,12 @@ const menu = [
 	{
 		title: "Video to Gif",
 		icon: <BiImageAdd />,
-		path: "/video-editor-ToGif",
+		path: "/video-editor-to-gif",
+	},
+	{
+		title: "Mute Video Audio",
+		icon: <BiImageAdd />,
+		path: "/video-editor-mute-video-audio",
 	},
 	{
 		title: "Account",

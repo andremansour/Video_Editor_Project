@@ -38,6 +38,12 @@ const Dashboard = () => {
 			desc: "",
 			link:"/video-editor-to-gif"
 		},
+		{
+			name: "Make a Gif!",
+			img: moon,
+			desc: "",
+			link:"/video-editor-to-gif"
+		},
 	];
 
 	return (

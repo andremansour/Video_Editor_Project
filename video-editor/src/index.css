@@ -58,6 +58,8 @@ section {
 
 .header {
   padding-top: 2rem;
+  margin: 30px;
+  background-color: #1f93ff;
 }
 
 /* UTILITY CLASSES */
@@ -311,9 +313,13 @@ p {
   align-items: center;
   transition: all 0.3s;
 }
+.btn-primary{
+  color: #fdfdfd;
+}
 
 .--btn:hover {
   transform: translateY(-2px);
+  background-color: #737880;
 }
 
 .--btn-lg {
@@ -322,6 +328,7 @@ p {
 
 .--btn-block {
   width: 100%;
+  /* bac */
 }
 
 .--btn-primary {

@@ -22,7 +22,8 @@ import VideoEditorComnbine from "./pages/VideoEditorCombine/VideoEditorCombine";
 import VideoEditorToGif from "./pages/VideoEditorVideoToGif/VideoEditorVideoToGif";
 import VideoMp4ToMp3 from "./pages/VideoMp4ToMp3/VideoMp4ToMp3";
 import VideoEditorMuteAudio from "./pages/VideoEditorMuteAudio/VideoEditorMuteAudio";
-import VideoEditorCropVideo from "./pages/VideoEditorCropVideo/VideoEditorCropVideo"
+import VideoEditorCropVideo from "./pages/VideoEditorCropVideo/VideoEditorCropVideo";
+import VideoEditorSlowMotion from "./pages/VideoEditorSlowMotion/VideoEditorSlowMotion"
 
 axios.defaults.withCredentials = true;
 
@@ -121,6 +122,16 @@ function App() {
 						<Sidebar>
 							<Layout>
 								<VideoEditorCropVideo />
+							</Layout>
+						</Sidebar>
+					}
+				/>
+				<Route
+					path="/video-editor-slow-motion"
+					element={
+						<Sidebar>
+							<Layout>
+								<VideoEditorSlowMotion />
 							</Layout>
 						</Sidebar>
 					}

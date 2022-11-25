@@ -39,6 +39,11 @@ const menu = [
 		path: "/video-editor-video-crop",
 	},
 	{
+		title: "Make Your Video Slow Motion",
+		icon: <BiImageAdd />,
+		path: "/video-editor-slow-motion",
+	},
+	{
 		title: "Account",
 		icon: <FaRegChartBar />,
 		childrens: [

@@ -15,9 +15,28 @@ const Dashboard = () => {
 			link:"/video-editor-trim"
 		},
 		{
-			name: "",
+			name: "Combine",
 			img: moon,
 			desc: "",
+			link:"/video-editor-combine"
+		},
+		{
+			name: "Mp4 to Mp3",
+			img: moon,
+			desc: "",
+			link:"/video-editor-convert-mp3-to-mp4"
+		},
+		{
+			name: "Crop your video!",
+			img: moon,
+			desc: "",
+			link:"/video-editor-video-crop"
+		},
+		{
+			name: "Make a Gif!",
+			img: moon,
+			desc: "",
+			link:"/video-editor-to-gif"
 		},
 	];
 
